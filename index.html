@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="todoList.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+<div class="container">
+    <div class="add-task-container">
+        <div class="task-input">
+            <input type="text" id="inputEp" placeholder="Add a new task...">
+            <input type="button" value="Add Task" id="addTask-btn">
+        </div>
+    
+       
+    </div>
+    <div  class="taskList-container" id="taskList-container"> 
+            
+    </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let addTask = document.getElementById('addTask-btn');
+    let taskInput = document.getElementById('inputEp');
+    let taskContainer = document.getElementById('taskList-container');
+
+    // get tasks from localStorage
+    let todoTasks = JSON.parse(localStorage.getItem('todoTasks')) || [];
+    
+    // Function to render tasks
+    const renderTasks = () => {
+        taskContainer.innerHTML = ''; 
+        todoTasks.forEach((task, index) => {
+            createTaskElement(task, index);
+        });
+    };
+
+    // Function to create a task element
+    const createTaskElement = (taskValue, index) => {
+        let todoTask = document.createElement('li');
+        todoTask.classList.add('todoTask');
+        todoTask.innerText = taskValue;
+  
+        let completeTaskButton = document.createElement('button');
+        completeTaskButton.style.border = "solid 2px #7ED4AD";
+        let completeTaskIcon = document.createElement("i");
+        completeTaskIcon.classList.add('bx', 'bx-check');
+        completeTaskButton.style.color = "#fff";
+        completeTaskButton.style.fontSize = "1.3rem";
+        completeTaskButton.style.backgroundColor = "#7ED4AD";
+        // completeTaskButton.style.marginLeft="8rem"
+        completeTaskButton.style.cursor = "pointer";
+        
+        completeTaskButton.appendChild(completeTaskIcon);
+        todoTask.appendChild(completeTaskButton);
+
+        let deleteButton = document.createElement('button');
+        deleteButton.style.border = "solid 2px #CC2B52";
+        let deleteTaskIcon = document.createElement("i");
+        deleteTaskIcon.classList.add('bx', 'bx-trash');
+        deleteButton.style.fontSize = "1.3rem";
+        deleteButton.style.cursor = "pointer";
+        deleteButton.style.backgroundColor = "#cc2b52";
+        deleteButton.style.color = "#fff";
+      
+
+        deleteButton.appendChild(deleteTaskIcon);
+        todoTask.appendChild(deleteButton);
+
+        deleteButton.addEventListener('click', () => {
+            todoTasks.splice(index, 1);
+            localStorage.setItem('todoTasks', JSON.stringify(todoTasks)); 
+            renderTasks(); 
+        });
+
+        completeTaskButton.addEventListener('click', () => {
+            todoTask.style.textDecoration = todoTask.style.textDecoration === "line-through" ? "none" : "line-through";
+           localStorage.setItem('todoTasks', JSON.stringify(todoTasks));
+        });
+
+        taskContainer.appendChild(todoTask);
+    };
+
+    addTask.addEventListener('click', () => {
+        let taskValue = taskInput.value.trim(); 
+
+        if (taskValue === "") {
+            alert("Task can't be empty");
+            return;
+        }
+
+        todoTasks.push(taskValue); 
+        localStorage.setItem('todoTasks', JSON.stringify(todoTasks)); 
+        createTaskElement(taskValue, todoTasks.length - 1); 
+
+        
+        taskInput.value = "";
+    });
+        
+    taskInput.addEventListener('keypress', (e)=>{
+       if (e.key === "Enter"){
+        addTask.click();
+       }
+    });
+
+    renderTasks(); 
+});
+</script>
+</body>
+</html>
